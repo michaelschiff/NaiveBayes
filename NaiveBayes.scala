@@ -51,7 +51,7 @@ package NaiveBayes {
       }
       var wordFreqs = sum(mat, 2) // mat is now the column vector. each row holds the number of docs containg that word
       wordFreqs += ones(wordFreqs.size, 1) //add the column vector of ones for smoothing
-      //divide every elt by the length of the col+2 (number terms in class + 2)
+      //divide every elt by the number docs in class + 2
       wordFreqs = wordFreqs/@(docSet._2.length+2)
       matrixes(docSet._1) = wordFreqs
     }
