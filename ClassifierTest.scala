@@ -2,11 +2,13 @@ import java.io.File
 import scala.io.Source
 import NaiveBayes._
 import ngrams.tokenFunctions._
-
+import PorterStemmer.Stemmer
 
 package ClassifierTest {
   object ClassifierTest extends App {
     
+    val stemmer = new Stemmer()
+
     val red = "\033[1;31m"
     val green = "\033[1;32m"
     val blue = "\033[1;34m"
@@ -25,6 +27,7 @@ package ClassifierTest {
         tokens = tokens ++ splitLine
       }
       //tokens = ngrams(tokens, 2)
+      tokens = tokens.map( token => stemmer.stem(token) )
       posExamples = tokens :: posExamples
     }
     
@@ -36,6 +39,7 @@ package ClassifierTest {
         tokens = tokens ++ splitLine
       }
       //tokens = ngrams(tokens, 2)
+      tokens = tokens.map( token => stemmer.stem(token) )
       negExamples = tokens :: negExamples
     }
     
@@ -55,6 +59,7 @@ package ClassifierTest {
         tokens = tokens ++ splitLine
       }
       //tokens = ngrams(tokens, 2)
+      tokens = tokens.map( token => stemmer.stem(token) )
       tests += (tokens -> 0)
     }
     for ( file <- new File("review_polarity/txt_sentoken/neg_test").listFiles.toIterator if file.isFile ) {
@@ -64,6 +69,7 @@ package ClassifierTest {
         tokens = tokens ++ splitLine
       }
       //tokens = ngrams(tokens, 2)
+      tokens = tokens.map( token => stemmer.stem(token) )
       tests += (tokens -> 1)
     }
     println("  |  Classifying documents")
