@@ -15,7 +15,7 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      tokens = ngrams(tokens, 2)
+      //tokens = ngrams(tokens, 2)
       posExamples = tokens :: posExamples
     }
     
@@ -26,7 +26,7 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      tokens = ngrams(tokens, 2)
+      //tokens = ngrams(tokens, 2)
       negExamples = tokens :: negExamples
     }
     
@@ -45,7 +45,7 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      tokens = ngrams(tokens, 2)
+      //tokens = ngrams(tokens, 2)
       tests += (tokens -> 0)
     }
     for ( file <- new File("review_polarity/txt_sentoken/neg_test").listFiles.toIterator if file.isFile ) {
@@ -54,7 +54,7 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      tokens = ngrams(tokens, 2)
+      //tokens = ngrams(tokens, 2)
       tests += (tokens -> 1)
     }
     println("  |  Classifying documents")
