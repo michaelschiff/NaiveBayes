@@ -1,22 +1,21 @@
 import java.io.File
 import scala.io.Source
 import NaiveBayes._
+import ngrams.tokenFunctions._
 package ClassifierTest {
   object ClassifierTest extends App {
-    
-    val stopWords: Set[String] = Set("by", "the", ".", ",", "(", ")", ";", "'")
-
     var posExamples: List[Array[String]] = List()
     var negExamples: List[Array[String]] = List()
 
+    println("Gathering Training Documents")
     //iterate through positive examples
     for ( file <- new File("review_polarity/txt_sentoken/pos").listFiles.toIterator if file.isFile ) {
       var tokens: Array[String] = Array()
       for (line <- Source fromFile file getLines ) {
         var splitLine = line.split(" ")
-        splitLine = splitLine.filter(x => !(stopWords contains x))
         tokens = tokens ++ splitLine
       }
+      tokens = ngrams(tokens, 2)
       posExamples = tokens :: posExamples
     }
     
@@ -25,9 +24,9 @@ package ClassifierTest {
       var tokens: Array[String] = Array()
       for (line <- Source fromFile file getLines ) {
         var splitLine = line.split(" ")
-        splitLine = splitLine.filter(x => !(stopWords contains x))
         tokens = tokens ++ splitLine
       }
+      tokens = ngrams(tokens, 2)
       negExamples = tokens :: negExamples
     }
     
@@ -38,24 +37,24 @@ package ClassifierTest {
 
     
     println("Testing Classifier")
-    println("  |  Gathering test docs")
+    println("  |  Gathering Test Documents")
     var tests = Map[Array[String], Int]()
     for ( file <- new File("review_polarity/txt_sentoken/pos_test").listFiles.toIterator if file.isFile ) {
       var tokens: Array[String] = Array()
       for (line <- Source fromFile file getLines ) {
         var splitLine = line.split(" ")
-        splitLine = splitLine.filter(x => !(stopWords contains x))
         tokens = tokens ++ splitLine
       }
+      tokens = ngrams(tokens, 2)
       tests += (tokens -> 0)
     }
     for ( file <- new File("review_polarity/txt_sentoken/neg_test").listFiles.toIterator if file.isFile ) {
       var tokens: Array[String] = Array()
       for (line <- Source fromFile file getLines ) {
         var splitLine = line.split(" ")
-        splitLine = splitLine.filter(x => !(stopWords contains x))
         tokens = tokens ++ splitLine
       }
+      tokens = ngrams(tokens, 2)
       tests += (tokens -> 1)
     }
     println("  |  Classifying documents")
