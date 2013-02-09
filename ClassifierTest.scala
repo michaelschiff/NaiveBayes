@@ -2,12 +2,21 @@ import java.io.File
 import scala.io.Source
 import NaiveBayes._
 import ngrams.tokenFunctions._
+
+
 package ClassifierTest {
   object ClassifierTest extends App {
+    
+    val red = "\033[1;31m"
+    val green = "\033[1;32m"
+    val blue = "\033[1;34m"
+    val default = "\033[0m"
+    def color(str: String, c: String): String = c+str+default
+    
     var posExamples: List[Array[String]] = List()
     var negExamples: List[Array[String]] = List()
 
-    println("Gathering Training Documents")
+    println(color("Gathering Training Documents", blue))
     //iterate through positive examples
     for ( file <- new File("review_polarity/txt_sentoken/pos").listFiles.toIterator if file.isFile ) {
       var tokens: Array[String] = Array()
@@ -36,7 +45,7 @@ package ClassifierTest {
     val classifier: BernoulliNB = new BernoulliNB(trainingData)
 
     
-    println("Testing Classifier")
+    println(color("Testing Classifier", blue))
     println("  |  Gathering Test Documents")
     var tests = Map[Array[String], Int]()
     for ( file <- new File("review_polarity/txt_sentoken/pos_test").listFiles.toIterator if file.isFile ) {
@@ -83,19 +92,24 @@ package ClassifierTest {
         tp1 += 1
       }
     }
-    val red = "\033[1;31m"
-    val green = "\033[1;32m"
-    val blue = "\033[1;34m"
-    val default = "\033[0m"
-    def color(str: String, c: String): String = c+str+default
 
+    val pPrecision = (tp / (tp + fp))
+    val pRecall = (tp / (tp + fn))
+    val pAccuracy = (100*((tp+tn)) / (tp + fp + tn + fn))
+    val pF = ((2*pPrecision*pRecall)/(pPrecision + pRecall))
+    val nPrecision = (tp1 / (tp1 + fp1))
+    val nRecall = (tp1 / (tp1 + fn1))
+    val nAccuracy = (100*((tp1+tn1)) / (tp1 + fp1 + tn1 + fn1))
+    val nF = ((2*nPrecision*nRecall)/(nPrecision + nRecall))
     println("  |  Positive Scores:")
-    println("  |    "+color("Precision: ", red) + (tp / (tp + fp)))
-    println("  |    "+color("Recall: ", red) + (tp / (tp + fn)))
-    println("  |    "+color("Accuracy: ", red) + (100*((tp+tn) / (tp+fp+tn+fn))) + "%")
+    println("  |    "+color("Precision: ", red) + pPrecision)
+    println("  |    "+color("Recall: ", red) + pRecall)
+    println("  |    "+color("F1: ", red) + pF)
+    println("  |    "+color("Accuracy: ", red) + pAccuracy + "%")
     println("  |  Negative Scores:")
-    println("  |    "+color("Precision: ", red) + (tp1 / (tp1 + fp1)))
-    println("  |    "+color("Recall: ", red) + (tp1 / (tp1 + fn1)))
-    println("  |    "+color("Accuracy: ", red) + (100*((tp1+tn1) / (tp1 + fp1 + tn1 + fn1))) + "%")
+    println("  |    "+color("Precision: ", red) + nPrecision)
+    println("  |    "+color("Recall: ", red) + nRecall)
+    println("  |    "+color("F1: ", red) + nF)
+    println("  |    "+color("Accuracy: ", red) + nAccuracy + "%")
   } //closes object
 } //closes package
