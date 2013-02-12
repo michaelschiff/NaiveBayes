@@ -25,7 +25,11 @@ package NaiveBayes {
       }
     }
     private var vocabularyMap: Map[String, Int] = Map[String,Int]()
-    for ( (term,index) <- vocabulary.zipWithIndex ) { vocabularyMap += (term -> index) } 
+    private var revVocabularyMap: Map[Int, String] = Map[Int, String]()
+    for ( (term,index) <- vocabulary.zipWithIndex ) { 
+      vocabularyMap += (term -> index) 
+      revVocabularyMap += (index -> term)
+    } 
     println("  |  Built vocabulary of " + vocabulary.size + " tokens.")
     //////////////////////////////////////////////////////////////////////////////
     
@@ -60,6 +64,7 @@ package NaiveBayes {
     private var inverseCondProbs = ln(ones(vocabulary.size, 1) - condProbs)
     condProbs = ln(condProbs)
     println("  |  Built conditional probability table")
+    
     //////////////////////////////////////////////////////////////////////////////
   
     //////////////////////Predictions////////////////////////////////////////////
@@ -73,11 +78,42 @@ package NaiveBayes {
       val prob = a * condProbs
       val inverseProb = b * inverseCondProbs
       val result = priors + prob + inverseProb
-      //println(result) ## Im getting negative probabilities. Why?
       
-      //This is a hack.  find a more general way to do the argmax.
+      //This is a hack.  find a more general way to do the argmax. This one relies on their being only 2 labels
       if (result(0,0) > result(0,1)) { return 0 }
       else { return 1 }
     }
+
+    def analyzeTokens(): Unit = {
+      //this function outputs the top five tokens that best distinguish a positive doc and the top five tokens that best distinguis a negative doc.  Assumes only two labels
+      var posImpacts: FMat = condProbs(?, 0) - condProbs(?, 1)
+      var negImpacts: FMat = condProbs(?, 1) - condProbs(?, 0)
+      println("  |  Words Most Indicative of a Positive Review:")
+      var i = 0
+      while (i < 5) {
+        var maxPos = maxi(posImpacts, 1)(0,0) 
+        for (x <- (0 to posImpacts.size-1)) { 
+          if (posImpacts(x, 0) == maxPos) { 
+            posImpacts(x, 0) = 0
+            println("  |    "+revVocabularyMap(x) + ": " + maxPos)
+            i += 1
+          }
+        }
+      }
+      println("  |  Words Most Indicative of a Negative Review:")
+      i = 0
+      while (i < 5) {
+        var maxNeg = maxi(negImpacts, 1)(0,0) 
+        for (x <- (0 to negImpacts.size-1)) { 
+          if (negImpacts(x, 0) == maxNeg) { 
+            negImpacts(x, 0) = 0
+            println("  |    "+revVocabularyMap(x) + ": " + maxNeg)
+            i += 1
+          }
+        }
+      }
+    }
   }
+
+
 }

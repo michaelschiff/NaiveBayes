@@ -7,6 +7,9 @@ import PorterStemmer.Stemmer
 package ClassifierTest {
   object ClassifierTest extends App {
     
+    val doStem = true 
+    val doNGram = false
+
     val stemmer = new Stemmer()
 
     val red = "\033[1;31m"
@@ -26,8 +29,8 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      //tokens = ngrams(tokens, 2)
-      tokens = tokens.map( token => stemmer.stem(token) )
+      if (doNGram) { tokens = ngrams(tokens, 2) }
+      if (doStem) { tokens = tokens.map( token => stemmer.stem(token) ) }
       posExamples = tokens :: posExamples
     }
     
@@ -38,8 +41,8 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      //tokens = ngrams(tokens, 2)
-      tokens = tokens.map( token => stemmer.stem(token) )
+      if (doNGram) { tokens = ngrams(tokens, 2) }
+      if (doStem) { tokens = tokens.map( token => stemmer.stem(token) ) }
       negExamples = tokens :: negExamples
     }
     
@@ -58,8 +61,8 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      //tokens = ngrams(tokens, 2)
-      tokens = tokens.map( token => stemmer.stem(token) )
+      if (doNGram) { tokens = ngrams(tokens, 2) }
+      if (doStem) { tokens = tokens.map( token => stemmer.stem(token) ) }
       tests += (tokens -> 0)
     }
     for ( file <- new File("review_polarity/txt_sentoken/neg_test").listFiles.toIterator if file.isFile ) {
@@ -68,8 +71,8 @@ package ClassifierTest {
         var splitLine = line.split(" ")
         tokens = tokens ++ splitLine
       }
-      //tokens = ngrams(tokens, 2)
-      tokens = tokens.map( token => stemmer.stem(token) )
+      if (doNGram) { tokens = ngrams(tokens, 2) }
+      if (doStem) { tokens = tokens.map( token => stemmer.stem(token) ) }
       tests += (tokens -> 1)
     }
     println("  |  Classifying documents")
@@ -117,5 +120,7 @@ package ClassifierTest {
     println("  |    "+color("Recall: ", red) + nRecall)
     println("  |    "+color("F1: ", red) + nF)
     println("  |    "+color("Accuracy: ", red) + nAccuracy + "%")
+    println(color("Feature Analysis", blue))
+    classifier.analyzeTokens()
   } //closes object
 } //closes package
