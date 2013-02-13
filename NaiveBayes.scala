@@ -7,6 +7,7 @@ package NaiveBayes {
   class BernoulliNB(trainingData: Map[Int, List[Array[String]]]) {
     println("Initializing and Training Classifier")
     Mat.noMKL=true  //can I comment this out for better performance???
+    flip;
     ///////////////Count the number of training documents////////////////////// 
     private var numDocs: Float = 0
     for ( docSet <- trainingData ) {
@@ -66,9 +67,11 @@ package NaiveBayes {
     println("  |  Built conditional probability table")
     
     //////////////////////////////////////////////////////////////////////////////
-  
+    println("Training Speed: " + flop)
+
     //////////////////////Predictions////////////////////////////////////////////
     def predict(example: Array[String]): Int = {
+      flip;
       val a: FMat = zeros(1, vocabulary.size)
       val b: FMat = ones(1, vocabulary.size)
       for (word <- example if vocabulary contains word ) {
@@ -78,7 +81,8 @@ package NaiveBayes {
       val prob = a * condProbs
       val inverseProb = b * inverseCondProbs
       val result = priors + prob + inverseProb
-      
+        
+      println(flop)
       //This is a hack.  find a more general way to do the argmax. This one relies on their being only 2 labels
       if (result(0,0) > result(0,1)) { return 0 }
       else { return 1 }
